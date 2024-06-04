@@ -4,7 +4,6 @@ import pandas as pd
 
 st.set_page_config(
     page_title="Data page",
-    page_icon=":house:",
     layout="wide"
 )
 
