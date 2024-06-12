@@ -11,16 +11,18 @@ st.title("Customer Churn Database - Vodafone")
 
 @st.cache_resource(show_spinner='connecting to database...')
 def init_connection():
-    return pyodbc.connect(
-        "DRIVER = {SQL Server}: SERVER="
-        + st.secrets['DB_SERVER']
-        + "; DATABASE="
-        + st.secrets['DB_NAME']
-        + "; UID="
-        + st.secrets['DB_LOGIN']
-        + "; PWD="
-        + st.secrets['DB_PASSWORD']
-    )
+    try:
+        connection = pyodbc.connect(
+            "DRIVER={ODBC Driver 17 for SQL Server};"
+            "SERVER=" + st.secrets['DB_SERVER'] + ";"
+            "DATABASE=" + st.secrets['DB_NAME'] + ";"
+            "UID=" + st.secrets['DB_LOGIN'] + ";"
+            "PWD=" + st.secrets['DB_PASSWORD']
+        )
+        return connection
+    except Exception as e:
+        st.error(f"Error connecting to database: {e}")
+        return None
 
 
 connection = init_connection()
