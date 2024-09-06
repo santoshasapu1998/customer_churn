@@ -9,7 +9,7 @@ st.set_page_config(
 
 st.title("Customer Churn Database - Vodafone")
 
-@st.cache_resource(show_spinner='connecting to database...')
+@st.cache_resource(show_spinner='Connecting to database...')
 def init_connection():
     try:
         connection = pyodbc.connect(
@@ -24,20 +24,37 @@ def init_connection():
         st.error(f"Error connecting to database: {e}")
         return None
 
-
 connection = init_connection()
 
-@st.cache_data(show_spinner='running_query...')
-def running_query(query):
-    with connection.cursor() as c:
-        c.execute(query)
-        rows = c.fetchall()
-        df = pd.DataFrame.from_records(rows, columns=[column[0] for column in c.description])
+@st.cache_data(show_spinner='Running query...')
+def running_query(query, _connection):
+    try:
+        with _connection.cursor() as cursor:
+            cursor.execute(query)
+            rows = cursor.fetchall()
+            df = pd.DataFrame.from_records(rows, columns=[column[0] for column in cursor.description])
+        return df
+    except Exception as e:
+        st.error(f"Error executing query: {e}")
+        return pd.DataFrame()  # Return an empty DataFrame in case of error
 
-    return df
+def get_all_column():
+    sql_query = "SELECT * FROM LP2_Telco_churn_first_3000"
+    return running_query(sql_query, connection)
 
-sql_query = "SELECT * FROM dbo.LP2_Telco_churn_first_3000"
+df = get_all_column()
 
-rows = running_query(sql_query)
+if df.empty:
+    st.error("No data retrieved from the database.")
+else:
+    numerical_columns = df.select_dtypes(include=['number']).columns
+    categorical_columns = df.select_dtypes(exclude=['number']).columns
 
-st.write(rows)
+    option = st.selectbox('Select columns to display', options=['All columns', 'Numerical columns', 'Categorical columns'])
+
+    if option == 'All columns':
+        st.write(df)
+    elif option == 'Numerical columns':
+        st.write(df[numerical_columns])
+    elif option == 'Categorical columns':
+        st.write(df[categorical_columns])

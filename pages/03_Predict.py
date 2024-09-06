@@ -44,8 +44,7 @@ def save_prediction(data):
         history_df = df
     history_df.to_csv('history.csv', index=False)
 
-def make_prediction(pipeline, encoder):
-    customerID = st.session_state['customerID']      
+def make_prediction(pipeline, encoder):      
     gender = st.session_state['gender']
     senior_citizen = st.session_state['senior_citizen']
     partner = st.session_state['partner']
@@ -66,7 +65,7 @@ def make_prediction(pipeline, encoder):
     streaming_movies = st.session_state['streaming_movies']
     contract = st.session_state['contract']
     
-    data = {'customerid': [customerID], 'gender': [gender], 'seniorcitizen': [senior_citizen], 'partner': [partner], 'dependents': [dependents],
+    data = {'gender': [gender], 'seniorcitizen': [senior_citizen], 'partner': [partner], 'dependents': [dependents],
        'tenure': [tenure], 'phoneservice': [phone_service], 'multiplelines': [multiple_lines], 'internetservice': [internet_service],
        'onlinesecurity': [online_security], 'onlinebackup': [online_backup], 'deviceprotection': [device_protection], 'techsupport': [tech_support],
        'streamingtv': [streaming_tv], 'streamingmovies': [streaming_movies], 'contract': [contract], 'paperlessbilling': [paperless_billing],
@@ -102,7 +101,6 @@ def display_form():
         col1, col2 = st.columns(2)
         with col1:
             st.write('### Customer Details')
-            st.text_input('Customer ID', key='customerID')
             st.selectbox('Gender', options=['Male', 'Female'], key='gender')
             st.selectbox('Senior Citizen', options=['Yes', 'No'], key='senior_citizen')
             st.selectbox('Partner', options=['Yes', 'No'], key='partner')
